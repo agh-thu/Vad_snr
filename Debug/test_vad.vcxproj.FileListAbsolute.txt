@@ -1,0 +1,2 @@
+D:\vad\webrtc\test_vad\Debug\test_vad.exe
+D:\vad\webrtc\test_vad\Debug\test_vad.pdb

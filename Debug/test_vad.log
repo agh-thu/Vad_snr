@@ -1,0 +1,10 @@
+﻿  main.c
+D:\vad\webrtc\test_vad\main.c(35,20): warning C4047: “==”:“int”与“void *”的间接级别不同
+D:\vad\webrtc\test_vad\main.c(90,53): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\vad\webrtc\test_vad\main.c(87,1): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\vad\webrtc\test_vad\main.c(88,1): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\vad\webrtc\test_vad\main.c(89,1): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\vad\webrtc\test_vad\main.c(11,23): warning C4101: “fout_buf”: 未引用的局部变量
+D:\vad\webrtc\test_vad\main.c(8,31): warning C4101: “fpOut”: 未引用的局部变量
+D:\vad\webrtc\test_vad\main.c(11,9): warning C4101: “f_buf”: 未引用的局部变量
+  test_vad.vcxproj -> D:\vad\webrtc\test_vad\Debug\test_vad.exe
