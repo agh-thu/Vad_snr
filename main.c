@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 	double s = 0.0, n = 0.0, s_tmp = 0.0;  
 	//f_buf = new short[FRAMESIZE];
 	//fout_buf = new short[FRAMESIZE];
-	fpInput = fopen("./0044.wav", "rb");
+	fpInput = fopen("./0010.wav", "rb");
 
 
 	if (fpInput == NULL)
@@ -73,7 +73,7 @@ int main(int argc, char** argv)
 				s += (float)audioFrame[i] * audioFrame[i];
 			}
 			s_frame++;
-			if (s_frame > 5)
+			if (s_frame > 5)//截取前5帧作为估计的噪声
 			{
 				s_tmp = s;
 			}
@@ -94,20 +94,20 @@ int main(int argc, char** argv)
 
 		fprintf(fpOutput, "%2d", status);
 	}
-	printf("snr_frame  is  %d\n", snr_frame);
-	printf("s_frame  is  %d\n", s_frame);
+	//printf("snr_frame  is  %d\n", snr_frame);
+	//printf("s_frame  is  %d\n", s_frame);
+	//printf("n_frame  is  %d\n", n_frame);
 	//对于噪声很大的情况下，可以截取一段开始的语音作为噪声
-			if ((snr_frame - s_frame) < 10)
+		if ((snr_frame - s_frame) < 10)
 		{
 			//截取开始的一段语音(10帧)作为噪声
 			
-				s = s_tmp;
-				s_frame = 10.0;
+				n = s_tmp;
 				
-				n = s_tmp/2.0;
-				n_frame = s_frame;
+				n_frame = 5;
 
 		}
+			printf("n_frame  is  %d\n", n_frame);
 	float s1= s / s_frame;
 	
 	float n1= n / n_frame;
@@ -118,7 +118,7 @@ int main(int argc, char** argv)
 	fprintf(stderr, "SNR = %f \n", snr);
 	//根据信噪比来计算语音质量，如果snr超过100或者其他数字，显示
 	int sa = voice_qa(snr);
-//printf("sa si %d \n", sa);
+printf("sa si %d \n", sa);
 	fclose(fpInput);
 	fclose(fpOutput);
 	WebRtcVad_Free(vadInst);
