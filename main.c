@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "vad/webrtc_vad.h"
 #include <math.h>
-
+#include"voice_qa.h"
 #define FRAMESIZE 160
 int main(int argc, char** argv)
 {
@@ -10,16 +10,18 @@ int main(int argc, char** argv)
 	vadInst = NULL;
 	short* f_buf; short* fout_buf;
 	int s_frame = 0, n_frame = 0, snr_frame = 0;
-	
+	float Vox_qa = 0.0;
 	int fs = 16000;
 	int vad_mode = 1;
 	int status = 0;
 	float snr;
 	short audioFrame[FRAMESIZE];
-	double s = 0.0, n = 0.0;
+	double s = 0.0, n = 0.0, s_tmp = 0.0;  
 	//f_buf = new short[FRAMESIZE];
 	//fout_buf = new short[FRAMESIZE];
-	fpInput = fopen("./test.pcm", "rb");
+	fpInput = fopen("./0044.wav", "rb");
+
+
 	if (fpInput == NULL)
 	{
 		printf("open file failure\n");
@@ -35,7 +37,7 @@ int main(int argc, char** argv)
 	if (status == NULL)
 	{
 		printf("Create is error \n");
-		
+
 	}
 	status = WebRtcVad_Init(vadInst);//创建模型
 	if (status != 0)
@@ -45,11 +47,11 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	status = WebRtcVad_set_mode(vadInst, 2);//设置模型参数
+	status = WebRtcVad_set_mode(vadInst, 1);//设置模型参数
 	if (status != 0)
 	{
 		printf("WebRtcVad set mode is error\n");
-		
+
 		return -1;
 	}
 	printf("Activity : \n");
@@ -68,9 +70,13 @@ int main(int argc, char** argv)
 			printf("Active Voice\n");
 			for (int i = 0; i < FRAMESIZE; i++)
 			{
-				s += (float) audioFrame[i] * audioFrame[i];
+				s += (float)audioFrame[i] * audioFrame[i];
 			}
 			s_frame++;
+			if (s_frame > 5)
+			{
+				s_tmp = s;
+			}
 		}
 		else
 		{
@@ -80,16 +86,39 @@ int main(int argc, char** argv)
 				n += (float)audioFrame[i] * audioFrame[i];
 			}
 			n_frame++;
+			
+
 		}
 		snr_frame++;
+
+
 		fprintf(fpOutput, "%2d", status);
 	}
+	printf("snr_frame  is  %d\n", snr_frame);
+	printf("s_frame  is  %d\n", s_frame);
+	//对于噪声很大的情况下，可以截取一段开始的语音作为噪声
+			if ((snr_frame - s_frame) < 10)
+		{
+			//截取开始的一段语音(10帧)作为噪声
+			
+				s = s_tmp;
+				s_frame = 10.0;
+				
+				n = s_tmp/2.0;
+				n_frame = s_frame;
+
+		}
 	float s1= s / s_frame;
+	
 	float n1= n / n_frame;
-	float sn = 10 * log10(s1 / n1) - 1;
+
+	printf("n1  is  %f\n", n1);
+	//float sn = 10 * log10(s1 / n1) - 1;
 	snr = 10 * log10((s / s_frame) / (n / n_frame)) - 1;
 	fprintf(stderr, "SNR = %f \n", snr);
-
+	//根据信噪比来计算语音质量，如果snr超过100或者其他数字，显示
+	int sa = voice_qa(snr);
+//printf("sa si %d \n", sa);
 	fclose(fpInput);
 	fclose(fpOutput);
 	WebRtcVad_Free(vadInst);
